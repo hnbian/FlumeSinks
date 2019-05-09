@@ -6,7 +6,11 @@
 
     <groupId>com.hnbian</groupId>
     <artifactId>MyFlume</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>flume-ng-elasticsearch-sink</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -102,6 +106,7 @@
         <xerces.version>2.9.1</xerces.version>
         <wiremock.version>1.53</wiremock.version>
         <zookeeper.version>3.4.5</zookeeper.version>
+        <fastjson.version>1.2.58</fastjson.version>
 
     </properties>
 
