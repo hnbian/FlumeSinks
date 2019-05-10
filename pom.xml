@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>flume-ng-elasticsearch-sink</module>
+        <module>flume-ng-hbase2-sink</module>
     </modules>
 
     <properties>
