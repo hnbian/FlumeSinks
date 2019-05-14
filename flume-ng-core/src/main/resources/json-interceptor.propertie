@@ -1,0 +1,42 @@
+#定义source名称
+a1.sources = avro-source
+#定义channel名称
+a1.channels = memory-channel
+#定义sink名称
+a1.sinks = logger-sink
+
+
+# For each one of the sources, the type is defined
+#配置source
+#指定source类型
+a1.sources.avro-source.type = avro
+
+a1.sources.avro-source.bind = 0.0.0.0
+a1.sources.avro-source.port = 24691
+
+
+a1.sources.avro-source.interceptors = i1
+a1.sources.avro-source.interceptors.i1.type = JSON
+
+#
+a1.sources.avro-source.interceptors.i1.processType = ArrayExtractRename
+a1.sources.avro-source.interceptors.i1.extract = s1>s2>s3>a1,a2,a3,a4|a5
+#a1.sources.avro-source.interceptors.i1.renameColumn = {"a1": "c1","a2": "c2","a3": "c3","a4": "c4","a5": "c5"}
+
+
+
+#配置channel
+a1.channels.memory-channel.type = memory
+#通道容量
+a1.channels.memory-channel.capacity = 2000
+#通道事物容量
+a1.channels.memory-channel.transactionCapacity = 1001
+
+
+#配置sink
+a1.sinks.logger-sink.type = logger
+
+#指定source 数据发送到哪个channel
+a1.sources.avro-source.channels = memory-channel
+#指定sink 取哪个channel的数据
+a1.sinks.logger-sink.channel = memory-channel
