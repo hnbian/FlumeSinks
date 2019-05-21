@@ -78,7 +78,7 @@ public class RmdbSinkTest {
             SqlSession confSession = confSqlSessionFactory.openSession();
             //this.confSession = confSession;
 
-            /*confSession.insert("com.xinyi.flume.sink.rmdbtest.JSONMapper.saveToMysql", map);
+            /*confSession.insert("com.hnbian.flume.sink.rmdbtest.JSONMapper.saveToMysql", map);
             confSession.commit();*/
 
         }catch(Exception e){
@@ -136,7 +136,7 @@ public class RmdbSinkTest {
            configuration.setEnvironment(environment);
            SqlSessionFactory confSqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
            SqlSession confSession = confSqlSessionFactory.openSession();
-           /*confSession.insert("com.xinyi.flume.sink.rmdbtest.JSONMapper.saveToOracle", map);
+           /*confSession.insert("com.hnbian.flume.sink.rmdbtest.JSONMapper.saveToOracle", map);
             confSession.commit();*/
 
        }catch(Exception e){
