@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hnbian.flume.sink.test.JSONMapper">
+    <insert id="saveToMysql" >
+        <foreach collection="datas" item="item" separator=";">
+            INSERT INTO ${tableName} (${columns}) VALUES (${item})
+        </foreach>
+    </insert>
+
+    <insert id="saveToOracle" >
+        INSERT INTO ${tableName} (${columns})
+        <foreach collection="datas" item="item" index="index" separator="union all">
+            select
+            <foreach collection="item.split(',')" item="it" index="index2" separator=",">
+                #{it}
+            </foreach>
+            from dual
+        </foreach>
+    </insert>
+
+    <insert id="saveToPostgreSql" >
+        INSERT INTO ${tableName} (${columns}) VALUES
+        <foreach collection="datas" item="item" separator=",">
+             (${item})
+        </foreach>
+    </insert>
+
+</mapper>

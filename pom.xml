@@ -12,6 +12,7 @@
         <module>flume-ng-elasticsearch-sink</module>
         <module>flume-ng-hbase2-sink</module>
         <module>flume-ng-core</module>
+        <module>flume-ng-rmdb-sink</module>
     </modules>
 
     <properties>
