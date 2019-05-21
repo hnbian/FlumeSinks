@@ -54,7 +54,6 @@ public class RmdbSink extends AbstractSink implements Configurable, BatchSizeSup
                 }
                 String body = new String(event.getBody());
                 JSONObject eventJsonObject = JSON.parseObject(body);
-                //logger.info("body=>" + body);
                 if (null == columns) {
                     logger.info("columns init...");
                     Set<String> set = eventJsonObject.keySet();
