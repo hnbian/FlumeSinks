@@ -22,13 +22,12 @@ public class Test {
     @org.junit.Test
     public void testArray(){
 
-        String jsonString = "{\"ImageList\":[{\"Image\":{\"FaceList\":[],\"ImageInfo\":{},\"MotorVehicleList\":[{\"AppearTime\":\"\",\"BrandReliability\":75.99385070800781,\"Calling\":-1,\"CarOfVehicle\":\"\",\"CopilotCalling\":-1,\"CopilotSafeBelt\":-1,\"DescOfFrontItem\":\"\",\"DescOfRearItem\":\"\",\"DeviceID\":\"44000000051320000003\",\"Direction\":0,\"DirvingStatusCode\":\"\",\"DisapperaTime\":\"\",\"FilmColor\":\"0\",\"HasPlate\":\"0\",\"HitMarkInfo\":\"\",\"InfoKind\":1,\"IsAltered\":\"0\",\"IsCovered\":\"0\",\"IsDecked\":\"0\",\"IsModified\":false,\"IsSupicious\":\"0\",\"LaneNo\":1,\"LeftTopX\":622,\"LeftTopY\":225,\"MarkTime\":\"\",\"MotorVehicleID\":\"450000000025000000040720181008155403021220202122W\",\"NameOfPassedRoad\":\"\",\"NumOfPassenger\":0,\"PassTime\":\"20181008155403\",\"PlateCharReliability\":\"\",\"PlateClass\":\"0\",\"PlateColor\":\"99\",\"PlateNo\":\"\",\"PlateNoAttach\":\"\",\"PlateReliability\":0.0,\"RearviewMirror\":\"\",\"RightBtmX\":1151,\"RightBtmY\":1088,\"SafetyBelt\":-1,\"SideOfVehicle\":\"\",\"SourceID\":\"\",\"Speed\":0.0,\"StorageUrl1\":\"http://10.3.34.34:80/group1/M00/58/B0/CgMiIlu7DRqAJCR4AAOJNMEPUXY396.jp\",\"StorageUrl2\":\"\",\"StorageUrl3\":\"\",\"StorageUrl4\":\"\",\"StorageUrl5\":\"\",\"Sunvisor\":0,\"TollgateID\":\"\",\"UsingPropertiesCode\":\"\",\"VehicleBodyDesc\":\"\",\"VehicleBrand\":\"福田-风景-2012\",\"VehicleChassis\":\"\",\"VehicleClass\":\"13\",\"VehicleColor\":\"2\",\"VehicleColorDepth\":\"0\",\"VehicleDoor\":\"\",\"VehicleFrontItem\":\"1\",\"VehicleHeight\":0,\"VehicleHood\":\"\",\"VehicleLength\":0,\"VehicleModel\":\"福田\",\"VehicleRearItem\":\"\",\"VehicleRoof\":\"\",\"VehicleShielding\":\"\",\"VehicleStyles\":\"\",\"VehicleTrunk\":\"\",\"VehicleWheel\":\"\",\"VehicleWidth\":0,\"VehicleWindow\":\"\",\"WheelPrintedPattern\":\"\"}],\"PersonList\":[]}}],\"MsgCategory\":\"analysisResult\",\"command\":\"vehicle\",\"moduleCode\":\"45000000002500000004\",\"requestId\":\"8E396D00-050A-48C0-891F-191F335D65F7\",\"taskId\":\"\"}";
-        String extract = "ImageList>Image>MotorVehicleList>BrandReliability,CopilotCalling,PlateColor,StorageUrl1";
+        String extract = "c1>c2>c3>col1,col2,col3";
         String [] formatArray = extract.split(">");
-        String columnJSONString = "{\"BrandReliability\": \"c1\",\"CopilotCalling\": \"c2\",\"PlateColor\": \"c3\",\"StorageUrl1\": \"c4\"}";
+        String columnJSONString = "{\"cc1\": \"c1\",\"cc2\": \"c2\",\"cc3\": \"c3\",\"cc4\": \"c4\"}";
         Map columnMap = JSON.parseObject(columnJSONString).getInnerMap();
 
-        Object object = JSON.parseObject(jsonString);
+        Object object = JSON.parseObject(new String());
         for(int i = 0;i<formatArray.length-1;i++){
             object = getObject(object,formatArray[i]);
         }
