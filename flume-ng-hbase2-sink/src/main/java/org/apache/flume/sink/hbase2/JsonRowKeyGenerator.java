@@ -1,11 +1,11 @@
 package org.apache.flume.sink.hbase2;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.flume.sink.hbase2.JsonHBase2EventSerializer.KeyType;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 import java.util.UUID;
-import org.apache.flume.sink.hbase2.JsonHBase2EventSerializer.KeyType;
 
 /**
  * 创建RowKey 工具类

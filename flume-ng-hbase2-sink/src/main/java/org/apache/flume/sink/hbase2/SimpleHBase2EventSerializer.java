@@ -19,17 +19,15 @@
 
 package org.apache.flume.sink.hbase2;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Charsets;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.FlumeException;
 import org.apache.flume.conf.ComponentConfiguration;
 import org.apache.hadoop.hbase.client.Increment;
+import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Row;
-import org.apache.hadoop.hbase.util.Bytes;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -104,6 +102,9 @@ public class SimpleHBase2EventSerializer implements HBase2EventSerializer {
     this.cf = cf;
     event = event;
   }
+
+  @Override
+  public List<Mutation> getMutations(){return null;}
 
   @Override
   public List<Row> getActions() throws FlumeException {

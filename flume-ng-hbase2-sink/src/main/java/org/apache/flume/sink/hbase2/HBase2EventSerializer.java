@@ -18,13 +18,14 @@
  */
 package org.apache.flume.sink.hbase2;
 
-import java.util.List;
-
 import org.apache.flume.Event;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.conf.ConfigurableComponent;
 import org.apache.hadoop.hbase.client.Increment;
+import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Row;
+
+import java.util.List;
 
 /**
  * Interface for an event serializer which serializes the headers and body
@@ -44,7 +45,7 @@ public interface HBase2EventSerializer extends Configurable, ConfigurableCompone
   /**
    * Get the actions that should be written out to hbase as a result of this
    * event. This list is written to HBase using the HBase batch API.
-   * @return List of {@link org.apache.hadoop.hbase.client.Row} which
+   * @return List of {@link Row} which
    * are written as such to HBase.
    *
    * 0.92 increments do not implement Row, so this is not generic.
@@ -53,6 +54,7 @@ public interface HBase2EventSerializer extends Configurable, ConfigurableCompone
   List<Row> getActions();
 
   List<Increment> getIncrements();
+  List<Mutation> getMutations();
 
   /*
    * Clean up any state. This will be called when the sink is being stopped.

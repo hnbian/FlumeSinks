@@ -74,5 +74,36 @@ public class HBase2SinkConfigurationConstants {
   public static final int DEFAULT_MAX_CONSECUTIVE_FAILS = 10;
 
   public static final String CONFIG_MAX_CONSECUTIVE_FAILS = "maxConsecutiveFails";
+  /**
+   * 前缀/后缀
+   */
+  public static final String ROWKEY_FIX = "rowkey.fix";
+  /**
+   * 固定前后缀类型
+   */
+  public static final String ROWKEY_FIX_TYPE = "rowkey.fix.type";
+  /**
+   * 时间列格式
+   */
+  public static final String ROWKEY_FIX_COLUMN_FORMAT = "rowkey.fix.column.format";
 
+    /**
+     * 取时间格式的列名
+     */
+    public static final String ROWKEY_FIX_COLUMN_NAME = "rowkey.fix.column.name";
+
+  /**
+   * rowkey 拼装列
+   */
+  public static final String ROWKEY_COLUMNS = "rowkey.columns";
+  /**
+   * rowkey 分隔符
+   */
+  public static final String ROWKEY_SPLIT = "rowkey.split";
+  /**
+   * 是否将header保存到Hbase中。 默认false
+   */
+  public static final String SAVE_HEADER = "saveHeader";
+
+  public static final String COLUMN_FIX_TIME_FORMAT = "yyyyMMddHHmmssSSS"; //yyyyMMddHHmmssSSSS
 }

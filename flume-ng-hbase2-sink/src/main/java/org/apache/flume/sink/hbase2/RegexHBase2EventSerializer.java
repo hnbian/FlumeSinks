@@ -20,13 +20,13 @@ package org.apache.flume.sink.hbase2;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-//import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.FlumeException;
 import org.apache.flume.conf.ComponentConfiguration;
 import org.apache.hadoop.hbase.client.Increment;
+import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Row;
 
@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+//import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * An {@link HBase2EventSerializer} which parses columns based on a supplied
@@ -129,6 +131,8 @@ public class RegexHBase2EventSerializer implements HBase2EventSerializer {
   @Override
   public void configure(ComponentConfiguration conf) {
   }
+  @Override
+  public List<Mutation> getMutations(){return null;}
 
   @Override
   public void initialize(Event event, byte[] columnFamily) {

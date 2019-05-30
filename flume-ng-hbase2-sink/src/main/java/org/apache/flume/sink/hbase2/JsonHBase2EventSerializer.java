@@ -1,4 +1,5 @@
 package org.apache.flume.sink.hbase2;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Charsets;
@@ -6,11 +7,14 @@ import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.FlumeException;
 import org.apache.flume.conf.ComponentConfiguration;
-import org.apache.hadoop.hbase.client.Increment;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Row;
-import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.flume.sink.hbase2.builder.BuliderFactory;
+import org.apache.flume.sink.hbase2.builder.PutBulider;
+import org.apache.flume.sink.hbase2.builder.RowkeyBulider;
+import org.apache.hadoop.hbase.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +22,8 @@ import java.util.Map;
 /**
  * 解析JSON 格式的数据，将json的kv与和base的列名与列值相对应
  */
-public class JsonHBase2EventSerializer  implements HBase2EventSerializer  {
+public class JsonHBase2EventSerializer implements HBase2EventSerializer {
+    private static final Logger logger = LoggerFactory.getLogger(JsonHBase2EventSerializer.class);
     private String rowPrefix;
     private byte[] incrementRow;
     private byte[] cf;
@@ -28,13 +33,20 @@ public class JsonHBase2EventSerializer  implements HBase2EventSerializer  {
     private KeyType keyType;
     private byte[] body;
     private byte[] event;
+    private boolean enableWal = true;
     private Map<String, String> headers;
-    private String rowkeyFormat ;
+
+    //private String rowkeyFormat ;
     //前缀后缀属性
-    private String fixType ;
+    //private String fixType ;
     // rowkey 拼接字段
     private String columns;
-
+    private RowkeyBulider rowkeyBulider;
+    private PutBulider putBulider;
+    /**
+     * 是否将header保存到Hbase中。 默认false
+     */
+    private boolean saveHeader = false;
 
 
     public JsonHBase2EventSerializer() {
@@ -42,40 +54,41 @@ public class JsonHBase2EventSerializer  implements HBase2EventSerializer  {
 
     @Override
     public void configure(Context context) {
-        //rowPrefix = context.getString("rowPrefix", "default");
-        incrementRow =
-                context.getString("incrementRow", "incRow").getBytes(Charsets.UTF_8);
-        //String suffix = context.getString("suffix", "uuid");
-
-        /*String bodyColumn = context.getString("bodyColumn", "pCol");
-        String incColumn = context.getString("incrementColumn", "iCol");*/
-        rowkeyFormat = context.getString("rowkeyFormat","uuid");
-        String [] rkColumns = null;
-        if(!"uuid".equals(rowkeyFormat)){
-            rkColumns = rowkeyFormat.split("\\|");
-        }
+        incrementRow = context.getString("incrementRow", "incRow").getBytes(Charsets.UTF_8);
+        saveHeader = context.getBoolean(HBase2SinkConfigurationConstants.SAVE_HEADER, saveHeader);
 
 
-        if ( null != rkColumns && rkColumns.length == 2) {
-            columns = rkColumns[1];
-            fixType = rkColumns[0].split(",")[0];
-            switch (rkColumns[0].split(",")[1]) {
-                case "timestamp":
-                    keyType = KeyType.TS;
-                    break;
-                case "random":
-                    keyType = KeyType.RANDOM;
-                    break;
-                case "nano":
-                    keyType = KeyType.TSNANO;
-                    break;
-                default:
-                    keyType = KeyType.UUID;
-                    break;
-            }
-        }else if(null != rkColumns && rkColumns.length == 1){
-            columns = rkColumns[0];
-        }
+        logger.info("JsonHBase2EventSerializer.context.toString()=>" + context.toString());
+
+        String rowkeyFix = context.getString(HBase2SinkConfigurationConstants.ROWKEY_FIX);
+        String rowkeyFixType = context.getString(HBase2SinkConfigurationConstants.ROWKEY_FIX_TYPE);
+        String rowkeyFixColumnFormat = context.getString(HBase2SinkConfigurationConstants.ROWKEY_FIX_COLUMN_FORMAT);
+        String rowkeyFixColumnName = context.getString(HBase2SinkConfigurationConstants.ROWKEY_FIX_COLUMN_NAME);
+        String rowkeyColumns = context.getString(HBase2SinkConfigurationConstants.ROWKEY_COLUMNS);
+        String rowkeySplit = context.getString(HBase2SinkConfigurationConstants.ROWKEY_SPLIT,"-");
+        String columnFamily = context.getString(HBase2SinkConfigurationConstants.CONFIG_COLUMN_FAMILY);
+
+
+
+
+        rowkeyBulider = BuliderFactory.getRowkeyBulider(
+                rowkeyFix,
+                rowkeyFixType,
+                rowkeyFixColumnFormat,
+                rowkeyFixColumnName,
+                rowkeyColumns,
+                rowkeySplit
+        );
+
+        logger.info("rowkeyBulider.getClass()=> "+rowkeyBulider.getClass());
+
+        putBulider = BuliderFactory.getPutBulider(saveHeader, rowkeyBulider, columnFamily.getBytes());
+
+        logger.info("putBulider.getClass()=>" + putBulider.getClass());
+
+        /*String rowkeyFormat = context.getString("rowkeyFormat","uuid");
+        rowkeyBulider = RowkeyBuliderFactory.getRowkeyBulider(rowkeyFormat);*/
+
     }
 
     @Override
@@ -91,50 +104,32 @@ public class JsonHBase2EventSerializer  implements HBase2EventSerializer  {
 
     @Override
     public List<Row> getActions() throws FlumeException {
+        return null;
+    }
+
+    @Override
+    public List<Mutation> getMutations() throws FlumeException {
         List<Row> actions = new LinkedList<>();
-//        if (plCol != null) {
+        List<Mutation> mutations = new ArrayList<>();
 
-            try {
-               /* if (keyType == KeyType.TS) {
-                    rowKey = SimpleRowKeyGenerator.getTimestampKey(rowPrefix);
-                } else if (keyType == KeyType.RANDOM) {
-                    rowKey = SimpleRowKeyGenerator.getRandomKey(rowPrefix);
-                } else if (keyType == KeyType.TSNANO) {
-                    rowKey = SimpleRowKeyGenerator.getNanoTimestampKey(rowPrefix);
-                } else {
-                    rowKey = SimpleRowKeyGenerator.getUUIDKey(rowPrefix);
-                }*/
-                byte[] rowKey;
-                System.out.println("getActions rowkey==>"+rowkeyFormat);
-                JSONObject jb = JSON.parseObject(new String(body));
+        try {
+            JSONObject jb = JSON.parseObject(new String(body));
+            Put put = putBulider.bulidPut(jb, headers);
+            //put.setDurability(enableWal ? Durability.USE_DEFAULT : Durability.SKIP_WAL);
+            //put.setDurability(Durability.ASYNC_WAL); //最快但是会重复写入或丢数据
+            //put.setDurability(Durability.USE_DEFAULT); //800+
+            put.setDurability(Durability.SKIP_WAL); //1600+
+            mutations.add(put);
+        } catch (Exception e) {
+            throw new FlumeException("Could not get row key!", e);
+        }
 
-                if(null != fixType){
-                    //通过前缀或后缀加上列名组合
-                    rowKey = JsonRowKeyGenerator.getRowKey(jb,columns,fixType,keyType);
-                }else if(null != columns){
-                    rowKey = JsonRowKeyGenerator.getRowKey(jb,columns);
-                }else{
-                    rowKey = JsonRowKeyGenerator.getUUIDKey("default");
-                }
-
-                Put put = new Put(rowKey);
-                for (String key : jb.keySet()) {
-                    put.addColumn(cf, Bytes.toBytes(key), Bytes.toBytes(jb.getString(key)));
-                }
-                for(String key:headers.keySet()){
-                    put.addColumn(cfHeader, Bytes.toBytes(key), Bytes.toBytes(headers.get(key)));
-                }
-                actions.add(put);
-            } catch (Exception e) {
-                throw new FlumeException("Could not get row key!", e);
-            }
-
-       // }
-        return actions;
+        return mutations;
     }
 
     @Override
     public List<Increment> getIncrements() {
+
         List<Increment> incs = new LinkedList<>();
         if (incCol != null) {
             Increment inc = new Increment(incrementRow);
